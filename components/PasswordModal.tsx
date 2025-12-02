@@ -57,11 +57,13 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
           <div className="flex gap-3">
             <button
               type="submit"
-              className="group relative flex-1 px-4 py-3 bg-transparent border-2 border-green-500 text-green-400 font-mono font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:border-green-400 hover:text-green-300 hover:shadow-[0_0_20px_rgba(34,197,94,0.5)]"
+              onClick={handleSubmit}
+              className="group relative flex-1 px-4 py-3 bg-transparent border-2 border-green-500 text-green-400 font-mono font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:border-green-400 hover:text-green-300 hover:shadow-[0_0_20px_rgba(34,197,94,0.5)] active:border-green-400 active:text-green-300 active:shadow-[0_0_20px_rgba(34,197,94,0.5)] touch-manipulation"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <span className="relative z-10 tracking-wider">SUMBIT</span>
-              <div className="absolute inset-0 bg-green-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              <span className="relative z-10 tracking-wider pointer-events-none">SUBMIT</span>
+              <div className="absolute inset-0 bg-green-500 opacity-0 group-hover:opacity-10 group-active:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none"></div>
             </button>
             <button
               type="button"
@@ -70,11 +72,12 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
                 setError('');
                 onClose();
               }}
-              className="group relative flex-1 px-4 py-3 bg-transparent border-2 border-red-500 text-red-400 font-mono font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:border-red-400 hover:text-red-300 hover:shadow-[0_0_20px_rgba(239,68,68,0.5)]"
+              className="group relative flex-1 px-4 py-3 bg-transparent border-2 border-red-500 text-red-400 font-mono font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:border-red-400 hover:text-red-300 hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] active:border-red-400 active:text-red-300 active:shadow-[0_0_20px_rgba(239,68,68,0.5)] touch-manipulation"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <span className="relative z-10 tracking-wider">CANCEL</span>
-              <div className="absolute inset-0 bg-red-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-500/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              <span className="relative z-10 tracking-wider pointer-events-none">CANCEL</span>
+              <div className="absolute inset-0 bg-red-500 opacity-0 group-hover:opacity-10 group-active:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-500/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none"></div>
             </button>
           </div>
         </form>
