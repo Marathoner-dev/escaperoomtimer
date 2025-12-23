@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { USER_PASSWORD } from '@/lib/constants';
+import { useState, useEffect } from 'react';
+import { subscribeToPassword } from '@/lib/firestore';
 
 interface PasswordModalProps {
   isOpen: boolean;
@@ -13,6 +13,15 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userPassword, setUserPassword] = useState('escapeneon'); // 기본값
+
+  // Firestore에서 패스워드 구독
+  useEffect(() => {
+    const unsubscribe = subscribeToPassword((pwd) => {
+      setUserPassword(pwd);
+    });
+    return () => unsubscribe();
+  }, []);
 
   if (!isOpen) return null;
 
@@ -26,7 +35,7 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
     
     // 입력값 정리: 앞뒤 공백 제거, 소문자 변환
     const trimmedPassword = password.trim().toLowerCase();
-    const expectedPassword = USER_PASSWORD.toLowerCase();
+    const expectedPassword = userPassword.toLowerCase();
     
     // 디버깅용 (개발 환경에서만)
     if (process.env.NODE_ENV === 'development') {

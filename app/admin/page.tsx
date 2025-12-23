@@ -12,6 +12,8 @@ import {
   stopTimer,
   subscribeToRecords,
   deleteRecord,
+  subscribeToPassword,
+  updatePassword,
   TimerState,
   Record
 } from '@/lib/firestore';
@@ -26,6 +28,9 @@ export default function AdminPage() {
   const [timerState, setTimerState] = useState<TimerState | null>(null);
   const [records, setRecords] = useState<Record[]>([]);
   const [remainingSeconds, setRemainingSeconds] = useState(15 * 60);
+  const [userPassword, setUserPassword] = useState('escapeneon');
+  const [newPassword, setNewPassword] = useState('');
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const router = useRouter();
 
   // startTime 기반으로 remainingSeconds 계산하는 함수
@@ -82,9 +87,15 @@ export default function AdminPage() {
       setRecords(recs);
     });
 
+    // 패스워드 구독
+    const unsubscribePassword = subscribeToPassword((pwd) => {
+      setUserPassword(pwd);
+    });
+
     return () => {
       unsubscribeTimer();
       unsubscribeRecords();
+      unsubscribePassword();
     };
   }, [user]);
 
@@ -151,6 +162,33 @@ export default function AdminPage() {
     }
   };
 
+  const handleUpdatePassword = async () => {
+    if (!newPassword.trim()) {
+      alert('새 패스워드를 입력해주세요.');
+      return;
+    }
+
+    if (confirm('패스워드를 변경하시겠습니까?')) {
+      setIsUpdatingPassword(true);
+      try {
+        await updatePassword(newPassword.trim());
+        setNewPassword('');
+        alert('패스워드가 변경되었습니다.');
+      } catch (error: any) {
+        console.error('패스워드 변경 실패:', error);
+        const errorMessage = error?.message || error?.code || '알 수 없는 오류';
+        console.error('상세 에러:', {
+          code: error?.code,
+          message: error?.message,
+          stack: error?.stack
+        });
+        alert(`패스워드 변경에 실패했습니다.\n에러: ${errorMessage}`);
+      } finally {
+        setIsUpdatingPassword(false);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -182,7 +220,7 @@ export default function AdminPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* 타이머 제어 섹션 */}
           <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 shadow-sm">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">타이머 제어</h2>
@@ -222,6 +260,46 @@ export default function AdminPage() {
               isPaused={timerState?.isPaused || false}
               hasTimer={!!timerState && !!timerState.teamName}
             />
+          </div>
+
+          {/* 패스워드 설정 섹션 */}
+          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 shadow-sm">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">패스워드 설정</h2>
+            
+            <div className="mb-4">
+              <label htmlFor="currentPassword" className="block text-gray-700 mb-2 font-medium">
+                현재 패스워드
+              </label>
+              <input
+                id="currentPassword"
+                type="text"
+                value={userPassword}
+                disabled
+                className="w-full px-4 py-3 bg-gray-100 text-gray-600 rounded-lg border border-gray-300 cursor-not-allowed"
+              />
+            </div>
+
+            <div className="mb-6">
+              <label htmlFor="newPassword" className="block text-gray-700 mb-2 font-medium">
+                새 패스워드
+              </label>
+              <input
+                id="newPassword"
+                type="text"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="새 패스워드를 입력하세요"
+                className="w-full px-4 py-3 bg-white text-gray-900 rounded-lg border border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+            </div>
+
+            <button
+              onClick={handleUpdatePassword}
+              disabled={isUpdatingPassword || !newPassword.trim()}
+              className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+            >
+              {isUpdatingPassword ? '변경 중...' : '패스워드 변경'}
+            </button>
           </div>
 
           {/* 기록 섹션 */}
